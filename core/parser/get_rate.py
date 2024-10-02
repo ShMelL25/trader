@@ -1,15 +1,21 @@
 import re
 from bs4 import BeautifulSoup
 from datetime import datetime
+from ..base.query_bd import _get_currency_pairs, _add_currency_pairs, _add_currency_rate, _get_currency_list
 import pandas as pd
 import numpy as np
 import requests
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 class Parser(object):
     
     def __init__(self):
         self.get_currency_rate
+        self.engine = create_engine('postgresql://postgres:Santaclausoffice6@192.168.31.230:5432/trade_bd')
+        self.Session = sessionmaker(bind=self.engine)
+        self.session = self.Session()
     
     def get_currency_rate(self, first_currency, second_currency):
         # Адрес сайта, с которого мы будем получать данные
@@ -26,23 +32,27 @@ class Parser(object):
         
         
         result = float('.'.join(re.findall("\d+", result)))
-        self.create_data_frame(result, f'{first_currency}/{second_currency}', second_currency)
+        self.add_database_data(result, f'{first_currency}/{second_currency}', second_currency)
         
         # Возвращаем курс валюты как число
         return result
-    
-    def create_data_frame(self, current:float, current_name:str, currency_name:str):
         
-        try:
-            df_current = pd.read_csv('core/base/current.csv')
-            df_f = pd.DataFrame(
-                columns=['datetime', 'date', 'current_name', 'current', 'currency_name'],
-                data = list(zip([datetime.now()], [datetime.now().date()], [current_name], [current], [currency_name]))
-                )
-            df_current = pd.concat([df_current, df_f])
-        except FileNotFoundError:
-            df_current = pd.DataFrame(
-                columns=['datetime', 'date', 'current_name', 'current', 'currency_name'],
-                data = list(zip([datetime.now()], [datetime.now().date()], [current_name], [current], [currency_name]))
-                )
-        df_current.to_csv('core/base/current.csv', index=False)
+    def add_database_data(self, current:float, current_name:str, currency_name:str):
+        
+        df_pairs = pd.read_sql(_get_currency_pairs(current_name), self.engine)
+        if df_pairs.shape[0]==0:
+            
+            
+            self.session.execute(_add_currency_pairs(current_name))
+            self.session.commit()    
+            df_pairs = pd.read_sql(_get_currency_pairs(current_name), self.engine)
+        
+        self.session.execute(_add_currency_rate(df_pairs['id'].to_numpy()[0], current, datetime.now()))
+        self.session.commit()
+        self.session.close()
+        
+    def _get_currency(self):
+        
+        df = pd.read_sql(_get_currency_list(), self.engine)
+        
+        return [list(df['base_currency'].to_numpy()), list(df['quote_currency'].to_numpy())]
