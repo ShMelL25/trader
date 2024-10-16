@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 import json
+import numpy as np
 
 def generate_menu(level:str):
     
@@ -12,6 +13,18 @@ def generate_menu(level:str):
         builder.button(
             text=menu_json[level]['text'][i], 
             callback_data=menu_json[level]['callback_data'][i])
+    builder.adjust(1)
+    return builder
+
+def generate_menu_rate(text_arr, callback_data_arr):
+            
+    builder = InlineKeyboardBuilder()
+    text_arr = np.append(text_arr, 'Обратно в меню!')
+    callback_data_arr = np.append(callback_data_arr, 'menu')
+    for i in range(text_arr.shape[0]):
+        builder.button(
+            text=text_arr[i], 
+            callback_data=callback_data_arr[i])
     builder.adjust(1)
     return builder
 
