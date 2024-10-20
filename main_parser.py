@@ -1,6 +1,5 @@
 from core.parser.get_rate import Parser
 from multiprocess.pool import ThreadPool
-import numpy as np
 
 def main():
     currancy_arr = Parser()._get_currency()

@@ -10,6 +10,7 @@ from aiogram.fsm.state import State, StatesGroup
 import config.text as text
 from core.kb import generate_menu, iexit_kb
 from .query_base.query_bd_get import Sql_Pars
+from .query_base.create_img import del_img
 
 router = Router()
 
@@ -40,18 +41,25 @@ async def train_handler(callback: CallbackQuery, state: FSMContext):
     await state.set_state(SaveMessage.waiting_for_message)
     await callback.message.answer('text.menu_train_edit', reply_markup=ret.as_markup())
     await callback.message.delete()
+    
+@router.callback_query(lambda callback: callback.data == "expenses_receipts")
+async def train_handler(callback: CallbackQuery, state: FSMContext):
+    
+    
+    ret = Sql_Pars().get_rate(telegram_id=callback.from_user.id)
+    
+    await state.set_state(SaveMessage.waiting_for_message)
+    await callback.message.answer('text.menu_train_edit', reply_markup=ret.as_markup())
+    await callback.message.delete()
 
 @router.callback_query(lambda callback: "rate" in callback.data)
 async def add_handler(callback: CallbackQuery, state: FSMContext):
     
-    
     pair = callback.data
-    Sql_Pars().get_rate(pair=pair.split('_')[0], telegram_id=callback.from_user.id)
-    print(pair.split('_')[0])
-    photo_path = f'/home/pmonk-1487/projects/trader/core/telegram/log/{callback.from_user.id}.png'
-    photo_file = FSInputFile(photo_path)
-    await callback.message.reply_photo(photo=photo_file, reply_markup=iexit_kb)
-    #await callback.message.answer('text.menu_train_edit', reply_markup=)
+    ret = Sql_Pars().get_rate(pair=pair.split('_')[0], telegram_id=callback.from_user.id)
+    await callback.message.reply_photo(photo=FSInputFile(f'/home/pmonk-1487/projects/trader/core/telegram/log/{callback.from_user.id}.png'), 
+                                       reply_markup=iexit_kb, caption=f"{pair.split('_')[0]}: {ret}")
+    del_img(callback.from_user.id)
     await callback.message.delete()
     
 @router.callback_query(lambda callback: callback.data == "del_train")

@@ -2,10 +2,10 @@
     "0":{
         "text":[
             "Курс", 
-            "Одщая информация о боте",
+            "Отслеживание доходов и расходов!",
             "Регистрация"
         ], 
-        "callback_data":["course", "info", "registr"]
+        "callback_data":["course", "expenses_receipts", "registr"]
     },
     "1":{
         "text":[

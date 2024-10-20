@@ -5,7 +5,7 @@ from config import config_telegram
 import pandas as pd
 import numpy as np
 from ..kb import generate_menu_rate
-from .create_img import create_rate_plot
+from .create_img import create_rate_plot_plolty
 
 class Sql_Pars(object):
     
@@ -50,15 +50,18 @@ class Sql_Pars(object):
         else:
             query_get = f'''select 
                         date(t1.date),
+                        t1.date as date_time,
                         max(t1.exchange_rate) as rate
                         from currency_rate t1
                         join currency_pairs t2 on t1.currency_pair_id=t2.id
                         where t2.pair_name = '{pair}'
-                        group by 
+                        group by
+                        t1.date,
                         date(t1.date)
                         ORDER BY date(t1.date)
                         '''
             df = pd.read_sql(query_get, self.engine)
-            create_rate_plot(data=df, telegram_id=telegram_id)
+            create_rate_plot_plolty(data=df, telegram_id=telegram_id)
+            return df['rate'].to_numpy()[-1]
                         
         

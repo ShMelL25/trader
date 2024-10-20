@@ -42,7 +42,6 @@ class Parser(object):
         df_pairs = pd.read_sql(_get_currency_pairs(current_name), self.engine)
         if df_pairs.shape[0]==0:
             
-            
             self.session.execute(_add_currency_pairs(current_name))
             self.session.commit()    
             df_pairs = pd.read_sql(_get_currency_pairs(current_name), self.engine)
