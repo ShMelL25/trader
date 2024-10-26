@@ -7,19 +7,29 @@
         ], 
         "callback_data":["course", "expenses_receipts", "registr"]
     },
+    "0.1":{
+        "text":[
+            "Добавить", 
+            "Показать",
+            "Меню"
+        ], 
+        "callback_data":["add_", "get_", "menu"]
+    },
     "1":{
+        "text":[
+            "Траты", 
+            "Зачисления",
+            "Главное меню"
+        ], 
+        "callback_data":["expenses", "receipts", "menu"]
+    },
+    "2.1":{
         "text":[
             "Добавить тренировку", 
             "Удалить тренировку",
             "Главное меню"
         ], 
         "callback_data":["add_train", "del_train", "menu"]
-    },
-    "2.1":{
-        "text":[
-            "Меню"
-        ], 
-        "callback_data":["menu"]
     },
     "2.2":{
         "text":[
