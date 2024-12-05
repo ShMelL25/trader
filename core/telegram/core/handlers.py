@@ -8,8 +8,8 @@ from aiogram.types import (
 )
 from aiogram.fsm.state import State, StatesGroup
 
-import config.text as text
-from core.kb import generate_menu, iexit_kb
+from ..config import text
+from ..core.kb import generate_menu, iexit_kb, cource_exit_kb
 from .query_base.query_bd_get import Sql_Pars
 from .query_base.create_img import del_img
 
@@ -30,7 +30,7 @@ async def register_handler(callback: CallbackQuery):
     
     # Регистрируем пользователя, передавая имя и ID
     ret = Sql_Pars().register_user(telegram_name=telegram_name, telegram_id=telegram_id)
-    await callback.message.answer(ret, reply_markup=generate_menu(level='2.1').as_markup())
+    await callback.message.answer(ret, reply_markup=iexit_kb)
     await callback.message.delete()
 
 @router.callback_query(lambda callback: callback.data == "course")
@@ -88,7 +88,7 @@ async def add_handler(callback: CallbackQuery, state: FSMContext):
     pair = callback.data
     ret = Sql_Pars().get_rate(pair=pair.split('_')[0], telegram_id=callback.from_user.id)
     await callback.message.reply_photo(photo=FSInputFile(f'/home/pmonk-1487/projects/trader/core/telegram/log/{callback.from_user.id}.png'), 
-                                       reply_markup=iexit_kb, caption=f"{pair.split('_')[0]}: {ret}")
+                                       reply_markup=cource_exit_kb, caption=f"{pair.split('_')[0]}: {ret}")
     del_img(callback.from_user.id)
     await callback.message.delete()
     

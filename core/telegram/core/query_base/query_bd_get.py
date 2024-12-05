@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
-from config import config_telegram
+from ...config import config_telegram
 import pandas as pd
 import numpy as np
 from ..kb import generate_menu_rate
@@ -119,7 +119,16 @@ class Sql_Pars(object):
             t1.type_transaction
         
         """
-        pie_plot_create(pd.read_sql(query, self.engine), telegram_id)
+        df = pd.read_sql(query, self.engine)
+        
+        txt_json = {
+            'enrolment':'Доходы',
+            'expenses':'Расходы',
+        }
+        
+        for name in df['type_transaction'].unique():
+            df.loc[(df['type_transaction'] == name), 'type_transaction'] = txt_json[name]
+        pie_plot_create(df, telegram_id)
         
     
     def get_id(self, telegram_id):

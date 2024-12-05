@@ -19,24 +19,18 @@
         "text":[
             "Траты", 
             "Зачисления",
+            "Назад",
             "Главное меню"
         ], 
-        "callback_data":["expenses", "receipts", "menu"]
+        "callback_data":["expenses", "receipts", "expenses_receipts", "menu"]
     },
-    "2.1":{
+    "1.1":{
         "text":[
-            "Добавить тренировку", 
-            "Удалить тренировку",
-            "Главное меню"
+            "Транспорт", 
+            "Продукты",
+            "Жилье",
+            "Другое"
         ], 
-        "callback_data":["add_train", "del_train", "menu"]
-    },
-    "2.2":{
-        "text":[
-            "Расскажи", 
-            "Покажи", 
-            "Назад"
-        ], 
-        "callback_data":["tell_me", "show_me", "menu"]
+        "callback_data":["transport_expenses", "products_expenses", "apartment_expenses", "other_expenses"]
     }
 }

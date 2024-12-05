@@ -38,7 +38,7 @@ def min_max_open_close(data):
     return [np.array(date_arr).astype(str), min_arr, max_arr, open_arr, close_arr]
         
 def pie_plot_create(data, telegram_id):
-    fig = px.pie(data, values='sum_enrolment_expenses', names='type_transaction', title='test')
+    fig = px.pie(data, values='sum_enrolment_expenses', names='type_transaction', title='Расходы-Доходы')
     fig.write_image(f'/home/pmonk-1487/projects/trader/core/telegram/log/{telegram_id}.png')
     
 def del_img(telegram_id):

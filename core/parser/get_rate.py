@@ -8,12 +8,13 @@ import requests
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from ...config import config
 
 class Parser(object):
     
     def __init__(self):
         self.get_currency_rate
-        self.engine = create_engine('postgresql://postgres:Santaclausoffice6@192.168.31.230:5432/trade_bd')
+        self.engine = create_engine(config.SQL_URL)
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
     
