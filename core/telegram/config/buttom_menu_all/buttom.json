@@ -3,9 +3,10 @@
         "text":[
             "Курс", 
             "Отслеживание доходов и расходов!",
+            "Дашборд(Beta)",
             "Регистрация"
         ], 
-        "callback_data":["course", "expenses_receipts", "registr"]
+        "callback_data":["course", "expenses_receipts", "dash_board", "registr"]
     },
     "0.1":{
         "text":[
@@ -14,6 +15,14 @@
             "Меню"
         ], 
         "callback_data":["add_", "get_", "menu"]
+    },
+    "0.2":{
+        "text":[
+            "Сменить пароль", 
+            "Назад",
+            "Меню"
+        ], 
+        "callback_data":["сhange_password", "menu", "menu"]
     },
     "1":{
         "text":[

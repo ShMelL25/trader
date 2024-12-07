@@ -1,24 +1,32 @@
-import asyncio
 import logging
+from multiprocessing import Process
+from core.main_telegram import run_telegram_bot
+from core.main_dash import run_dash
 
-from aiogram import Bot, Dispatcher
-from aiogram.enums.parse_mode import ParseMode
-from aiogram.fsm.storage.memory import MemoryStorage
 
-from config import config
-from core.dash_plot.app import app
-from core.telegram.core.handlers import router
+def start_processes():
+    """
+    Запускает Telegram-бота и Dash-приложение параллельно.
+    """
+    # Логирование
+    logging.basicConfig(level=logging.INFO)
 
-async def main():
-    bot = Bot(token=config.BOT_TOKEN)
-    dp = Dispatcher(storage=MemoryStorage())
-    dp.include_router(router)
-    await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
-    
-    
-    
+    # Создаем два независимых процесса
+    telegram_process = Process(target=run_telegram_bot, daemon=True)
+    dash_process = Process(target=run_dash, daemon=True)
+
+    # Запускаем процессы
+    telegram_process.start()
+    dash_process.start()
+
+    # Логгирование информации о процессах
+    logging.info(f"Telegram-bot process started with PID: {telegram_process.pid}")
+    logging.info(f"Dash application process started with PID: {dash_process.pid}")
+
+    # Ждем завершения процессов
+    telegram_process.join()
+    dash_process.join()
+
+
 if __name__ == "__main__":
-    app.run_server(debug=True, host='0.0.0.0', port=8050)
-    #logging.basicConfig(level=logging.INFO)
-    #asyncio.run(main())
+    start_processes()

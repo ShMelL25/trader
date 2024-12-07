@@ -53,8 +53,7 @@ login_layout = html.Div(
 
                 # Alert for wrong credentials
                 html.Div(id="login-alert", style={"margin-top": "20px", "textAlign": "center"}),
-                html.Br(),
-                dcc.Link("Registration", href="/register", style={"fontSize": "13px", "display": "block", "textAlign": "center"})
+                html.Br()
             ]
         )
     ]

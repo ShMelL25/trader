@@ -13,6 +13,8 @@ from ..core.kb import generate_menu, iexit_kb, cource_exit_kb
 from .query_base.query_bd_get import Sql_Pars
 from .query_base.create_img import del_img
 
+from ...dash_plot.core.generate_password import Password
+
 router = Router()
 
 class SaveMessage(StatesGroup):
@@ -117,17 +119,14 @@ async def train_handler(callback: CallbackQuery, state: FSMContext):
     #await callback.message.answer('text.menu_train_edit')
     await callback.message.delete()
     
-@router.callback_query(lambda callback: callback.data == "del_train")
-async def del_handler(callback: CallbackQuery, state: FSMContext):
-    data = await state.get_data()
-    if 'saved_message' in data:
-        #ret = SQL_request().del_train(text=data['saved_message'], telegram_id=callback.message.from_user.id)
-        await callback.message.answer('Test', reply_markup=generate_menu(level='2.1').as_markup())
-        
-    else:
-        await callback.message.answer("Вы ничего не добавляли!\nПопробуйте еще раз", reply_markup=generate_menu(level='2.1').as_markup())
-    await state.clear()
-    await callback.message.delete()   
+@router.callback_query(lambda callback: callback.data == "dash_board")
+async def train_handler(callback: CallbackQuery, state: FSMContext):
+    
+    Password()
+    # Отправляем сохраненное сообщение пользователю
+    await callback.message.answer(text.return_url(), reply_markup=generate_menu(level='0.2').as_markup())
+    #await callback.message.answer('text.menu_train_edit')
+    await callback.message.delete()
     
 @router.message(StateFilter(SaveMessage.waiting_for_message))
 async def save_message(message: types.Message, state: FSMContext):
@@ -141,10 +140,6 @@ async def save_message(message: types.Message, state: FSMContext):
     except Exception as e:
         #print(f"Failed to delete message: {e}")
         pass
-
-    # Сбрасываем состояние
-    
-
     
 @router.callback_query(lambda callback: callback.data == "menu")
 async def menu(callback: CallbackQuery):

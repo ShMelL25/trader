@@ -8,6 +8,7 @@ from dash import Dash
 from flask import Flask, session
 from flask_session import Session
 from datetime import timedelta
+from .logout import logout_layout, validate_logout
 
 # Flask сервер для сессии
 server = Flask(__name__)
@@ -35,9 +36,11 @@ def display_page(pathname):
         return home_layout
     elif pathname == "/register":
         return register_layout
+    elif pathname == "/logout":
+        return logout_layout
     else:
         return login_layout  # Default is login page
-
+    
 
 # Callback for Login Validation (from login.py)
 app.callback(
@@ -59,6 +62,11 @@ app.callback(
     Output("protected-page-content", "children"),
     Input("url", "pathname")
 )(render_protected_page)
+
+app.callback(
+    Output("logout-content", "children"),
+    Input("url", "pathname")
+)(validate_logout)
 
 # Run server
 '''if __name__ == "__main__":

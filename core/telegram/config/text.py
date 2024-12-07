@@ -22,3 +22,14 @@ info_expenses_receipts = """
 date_info = """
     Выберите месяц для отображения!
 """
+
+def return_url(login='', password=''):
+
+    url_dash = f"""
+        http://93.100.247.117:8050/
+        
+        Login: {login}
+        Password: {password}
+
+    """
+    return url_dash

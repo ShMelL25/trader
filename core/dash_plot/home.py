@@ -15,6 +15,9 @@ def render_protected_page(pathname):
         ])
     # Если пользователь авторизован, показываем защищенное содержимое
     return html.Div([
+        html.Div([
+            html.Img(src='assets/icons8-сумка-с-евро-80.png', alt='image')
+            ], style={'background-color':'red'}),
         html.H3(f"Добро пожаловать, {session['username']}!", style={"textAlign": "center"}),
         html.Div("Это защищённая страница", style={"textAlign": "center"}),
         dcc.Link("Выйти", href="/logout"),
