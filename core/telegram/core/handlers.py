@@ -12,6 +12,7 @@ from ..config import text
 from ..core.kb import generate_menu, iexit_kb, cource_exit_kb
 from .query_base.query_bd_get import Sql_Pars
 from .query_base.create_img import del_img
+from core.base.dach_bd import Data_Base_Dash
 
 from ...dash_plot.core.generate_password import Password
 
@@ -122,9 +123,44 @@ async def train_handler(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(lambda callback: callback.data == "dash_board")
 async def train_handler(callback: CallbackQuery, state: FSMContext):
     
-    Password()
+    telegram_id = callback.from_user.id
+    hash_password = Data_Base_Dash().get_bd_password(telegram_id)
+    
+    if hash_password == 'None':
+        new_password = Password().create_new_password()
+        hash_password = Password().hash_password(new_password)
+        Data_Base_Dash().add_bd_password(telegram_id, hash_password)
+    else:
+        new_password = ''
+    
+    await callback.message.answer(text.return_url(telegram_id, new_password), 
+                                  reply_markup=generate_menu(level='0.2').as_markup())
+    await callback.message.delete()
+    
+@router.callback_query(lambda callback: callback.data == "сhange_password")
+async def train_handler(callback: CallbackQuery, state: FSMContext):
+    
+    await state.set_state(SaveMessage.waiting_for_message)
+    await callback.message.answer(text.change_password_txt, 
+                                  reply_markup=generate_menu(level='0.3').as_markup())
+    await callback.message.delete()
+    
+@router.callback_query(lambda callback: callback.data == "сhange_password_new")
+async def train_handler(callback: CallbackQuery, state: FSMContext):
+    
+    data = await state.get_data()
+    saved_message = data.get('saved_message', 'No message has been saved yet.')
+    
+    if save_message != 'No message has been saved yet.':
+        hash_password = Password().hash_password(saved_message)
+        Data_Base_Dash().change_bd_password(telegram_id=callback.from_user.id,
+                                        hashAndSalt=hash_password)
+        text_message = 'Complied'
+    else:
+        text_message = 'Error'
+    
     # Отправляем сохраненное сообщение пользователю
-    await callback.message.answer(text.return_url(), reply_markup=generate_menu(level='0.2').as_markup())
+    await callback.message.answer(text_message, reply_markup=iexit_kb)
     #await callback.message.answer('text.menu_train_edit')
     await callback.message.delete()
     

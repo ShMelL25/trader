@@ -22,14 +22,27 @@ info_expenses_receipts = """
 date_info = """
     Выберите месяц для отображения!
 """
+change_password_txt = """
+Введите новый пароль, затем нажмите кнопку "Заменить"
+"""
 
-def return_url(login='', password=''):
+def return_url(login, password):
 
-    url_dash = f"""
-        http://93.100.247.117:8050/
-        
+    if password != '':
+        url_dash = f"""
+            http://93.100.247.117:8050/
+            
         Login: {login}
         Password: {password}
 
-    """
+        """
+    else:
+        url_dash = f"""
+            http://93.100.247.117:8050/
+            
+        Login: {login}
+
+        """
     return url_dash
+
+

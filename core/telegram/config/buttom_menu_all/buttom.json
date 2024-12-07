@@ -24,6 +24,14 @@
         ], 
         "callback_data":["сhange_password", "menu", "menu"]
     },
+    "0.3":{
+        "text":[
+            "Сменить", 
+            "Назад",
+            "Меню"
+        ], 
+        "callback_data":["сhange_password_new", "dash_board", "menu"]
+    },
     "1":{
         "text":[
             "Траты", 

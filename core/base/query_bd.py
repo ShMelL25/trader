@@ -29,3 +29,33 @@ def _get_currency_list()->str:
     
     query = text(f"select base_currency, quote_currency from currency_pairs")     
     return query
+
+def _get_user_id(telegram_id:int)->str:
+    query_get = f'''select id
+                    from users_trade_torch
+                    where telegram_id = {telegram_id}
+                    '''
+    return query_get
+
+def _change_password_query(id_user:int, password:str)->str:
+    query_get = f'''UPDATE user_dash_board
+                    SET password = '{password}',
+                    date_create = '{str(datetime.datetime.now())}'
+                    WHERE user_id = {id_user}
+                '''
+    return query_get
+
+def _get_bd_password_query(id_user:int):
+    
+    return f"""
+                select *
+                from user_dash_board
+                where user_id = {id_user}
+            """
+
+def _add_bd_password_query(id_user:int, hashAndSalt:str):
+    
+    return f'''
+                INSERT INTO user_dash_board (user_id, password, date_create) 
+                VALUES ({id_user},'{hashAndSalt}', '{str(datetime.datetime.now())}')
+            '''
