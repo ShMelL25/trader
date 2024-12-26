@@ -1,9 +1,11 @@
 import logging
-from multiprocessing import Process
-from core.main_telegram import run_telegram_bot
-from core.main_dash import run_dash
+import threading
+import asyncio
+from multiprocessing import Process, Pool
+from core.main_telegram import run_telegram_bot, telegrambot
+from core.main_dash import run_dash  
 
-
+        
 def start_processes():
     """
     Запускает Telegram-бота и Dash-приложение параллельно.
@@ -27,6 +29,8 @@ def start_processes():
     telegram_process.join()
     dash_process.join()
 
+    
 
 if __name__ == "__main__":
     start_processes()
+    

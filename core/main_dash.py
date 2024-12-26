@@ -1,6 +1,5 @@
 from .dash_plot.app import app
 
-
 def run_dash():
     """
     Функция запуска Dash-приложения

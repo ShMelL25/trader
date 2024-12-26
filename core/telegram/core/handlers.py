@@ -10,7 +10,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 from ..config import text
 from ..core.kb import generate_menu, iexit_kb, cource_exit_kb
-from .query_base.query_bd_get import Sql_Pars
+from core.base.telegram_bd import Sql_Pars
 from .query_base.create_img import del_img
 from core.base.dach_bd import Data_Base_Dash
 
@@ -23,6 +23,13 @@ class SaveMessage(StatesGroup):
 
 @router.message(Command("start"))
 async def start_handler(msg: Message):
+    
+    telegram_id = msg.from_user.id
+    telegram_name = msg.from_user.full_name
+    
+    # Регистрируем пользователя, передавая имя и ID
+    ret = Sql_Pars().register_user(telegram_name=telegram_name, telegram_id=telegram_id)
+    Sql_Pars().close_connect()
     await msg.answer(text.greet.format(name=msg.from_user.full_name), reply_markup=generate_menu(level='0').as_markup())
     await msg.delete()
 
@@ -33,6 +40,7 @@ async def register_handler(callback: CallbackQuery):
     
     # Регистрируем пользователя, передавая имя и ID
     ret = Sql_Pars().register_user(telegram_name=telegram_name, telegram_id=telegram_id)
+    Sql_Pars().close_connect()
     await callback.message.answer(ret, reply_markup=iexit_kb)
     await callback.message.delete()
 
@@ -41,7 +49,7 @@ async def train_handler(callback: CallbackQuery, state: FSMContext):
     
     
     ret = Sql_Pars().get_rate(telegram_id=callback.from_user.id)
-    
+    Sql_Pars().close_connect()
     await state.set_state(SaveMessage.waiting_for_message)
     await callback.message.answer('text.menu_train_edit', reply_markup=ret.as_markup())
     await callback.message.delete()
@@ -64,7 +72,7 @@ async def train_handler(callback: CallbackQuery, state: FSMContext):
     await state.set_state(SaveMessage.waiting_for_message)
     
     date_menu = Sql_Pars().get_date_year_moth(callback.from_user.id)
-    
+    Sql_Pars().close_connect()
     if type(date_menu) != str:
         #await callback.message.reply_photo(photo=FSInputFile(f'/home/pmonk-1487/projects/trader/core/telegram/log/{callback.from_user.id}.png'), 
                                         #reply_markup=iexit_kb)
@@ -80,6 +88,7 @@ async def add_handler(callback: CallbackQuery, state: FSMContext):
     
     date_get = callback.data
     ret = Sql_Pars().get_transaction(date_add=date_get.split('_')[0], telegram_id=callback.from_user.id)
+    Sql_Pars().close_connect()
     await callback.message.reply_photo(photo=FSInputFile(f'/home/pmonk-1487/projects/trader/core/telegram/log/{callback.from_user.id}.png'), 
                                        reply_markup=iexit_kb)
     del_img(callback.from_user.id)
@@ -90,6 +99,7 @@ async def add_handler(callback: CallbackQuery, state: FSMContext):
     
     pair = callback.data
     ret = Sql_Pars().get_rate(pair=pair.split('_')[0], telegram_id=callback.from_user.id)
+    Sql_Pars().close_connect()
     await callback.message.reply_photo(photo=FSInputFile(f'/home/pmonk-1487/projects/trader/core/telegram/log/{callback.from_user.id}.png'), 
                                        reply_markup=cource_exit_kb, caption=f"{pair.split('_')[0]}: {ret}")
     del_img(callback.from_user.id)
@@ -101,7 +111,7 @@ async def train_handler(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     saved_message = data.get('saved_message', 'No message has been saved yet.')
     Sql_Pars().add_transaction(saved_message,callback.from_user.id,'expenses')
-
+    Sql_Pars().close_connect()
     # Отправляем сохраненное сообщение пользователю
     await callback.message.answer(saved_message, reply_markup=iexit_kb)
     #await callback.message.answer('text.menu_train_edit')
@@ -110,11 +120,10 @@ async def train_handler(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(lambda callback: callback.data == "receipts")
 async def train_handler(callback: CallbackQuery, state: FSMContext):
     
-    
     data = await state.get_data()
     saved_message = data.get('saved_message', 'No message has been saved yet.')
     Sql_Pars().add_transaction(saved_message,callback.from_user.id,'enrolment')
-
+    Sql_Pars().close_connect()
     # Отправляем сохраненное сообщение пользователю
     await callback.message.answer(saved_message, reply_markup=iexit_kb)
     #await callback.message.answer('text.menu_train_edit')
@@ -124,15 +133,25 @@ async def train_handler(callback: CallbackQuery, state: FSMContext):
 async def train_handler(callback: CallbackQuery, state: FSMContext):
     
     telegram_id = callback.from_user.id
+    telegram_name = callback.from_user.full_name
     hash_password = Data_Base_Dash().get_bd_password(telegram_id)
     
     if hash_password == 'None':
         new_password = Password().create_new_password()
         hash_password = Password().hash_password(new_password)
         Data_Base_Dash().add_bd_password(telegram_id, hash_password)
+        
+    elif hash_password == 'None_registr':
+        ret = Sql_Pars().register_user(telegram_name=telegram_name, telegram_id=telegram_id)
+        Sql_Pars().close_connect()
+        new_password = Password().create_new_password()
+        hash_password = Password().hash_password(new_password)
+        Data_Base_Dash().add_bd_password(telegram_id, hash_password)
+        
     else:
         new_password = ''
-    
+        
+    Data_Base_Dash().close_connect()
     await callback.message.answer(text.return_url(telegram_id, new_password), 
                                   reply_markup=generate_menu(level='0.2').as_markup())
     await callback.message.delete()
@@ -159,6 +178,7 @@ async def train_handler(callback: CallbackQuery, state: FSMContext):
     else:
         text_message = 'Error'
     
+    Data_Base_Dash().close_connect()
     # Отправляем сохраненное сообщение пользователю
     await callback.message.answer(text_message, reply_markup=iexit_kb)
     #await callback.message.answer('text.menu_train_edit')

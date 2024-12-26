@@ -2,8 +2,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 import pandas as pd
+import numpy as np
 from config import config
-from .query_bd import _get_user_id, _add_bd_password_query, _get_bd_password_query, _change_password_query
+from .query_bd import _get_user_id, _add_bd_password_query, \
+            _get_bd_password_query, _change_password_query, \
+            _get_transaction_query, get_date_year_moth_query
 import bcrypt
 
 
@@ -14,9 +17,13 @@ class Data_Base_Dash:
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()  
         
-    def get_bd_password(self, telegram_id:int)->bytes:
+    def get_bd_password(self, telegram_id:int)->bytes|str:
         
         id_user = self.get_id(telegram_id)
+        
+        if id_user == 'None':
+            return 'None_registr'
+        
         df = pd.read_sql(_get_bd_password_query(id_user=id_user), self.engine)
         
         if len(df) < 1:
@@ -62,5 +69,20 @@ class Data_Base_Dash:
         else:
             return df['id'].to_numpy()[0]
         
+    def get_transaction_dash(self, 
+                             telegram_id, 
+                             date_add)->pd.DataFrame:
+        
+        df = pd.read_sql(_get_transaction_query(telegram_id, date_add), self.engine)
+        return df
+    
+    def get_date_transaction_dash(self, 
+                             telegram_id)->np.array:
+        
+        df = pd.read_sql(get_date_year_moth_query(telegram_id), self.engine)
+        
+        return df.to_numpy()
+        
+    
     def close_connect(self):
         self.session.close()  

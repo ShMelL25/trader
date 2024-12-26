@@ -2,7 +2,8 @@ import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from .login import login_layout, validate_login
-from .home import home_layout, render_protected_page
+from .home import home_layout, render_protected_page, generate_plotly_div,\
+    generate_plotly_div_bar
 from .register import register_user, register_layout
 from dash import Dash
 from flask import Flask, session
@@ -30,7 +31,8 @@ app.layout = html.Div(
 )
 
 # Update the Page Based on URL
-@app.callback(Output("page-content", "children"), Input("url", "pathname"))
+@app.callback(Output("page-content", "children"), 
+              Input("url", "pathname"))
 def display_page(pathname):
     if pathname == "/home":
         return home_layout
@@ -45,10 +47,10 @@ def display_page(pathname):
 # Callback for Login Validation (from login.py)
 app.callback(
     Output("login-message", "children"),
-    Output("url", "href"),
+    Output("url", "href", allow_duplicate=True),
     Input("login-button", "n_clicks"),
     State("login-username", "value"),
-    State("login-password", "value")
+    State("login-password", "value"), prevent_initial_call=True
 )(validate_login)
 
 app.callback(
@@ -58,15 +60,29 @@ app.callback(
     State("register-password", "value"),
 )(register_user)
 
+#home_page
 app.callback(
     Output("protected-page-content", "children"),
-    Input("url", "pathname")
+    Input("url", "pathname"), 
 )(render_protected_page)
 
+app.callback(
+    Output("div_pie_plot", "children", allow_duplicate=True),
+    Output("url", "href", allow_duplicate=True),
+    Input("date_drop_down_pie", "value"), prevent_initial_call=True
+)(generate_plotly_div)
+
+app.callback(
+    Output("div_bar_plot", "children", allow_duplicate=True),
+    Input("date_drop_down_pie", "value"), prevent_initial_call=True
+)(generate_plotly_div_bar)
+
+#logout_page
 app.callback(
     Output("logout-content", "children"),
     Input("url", "pathname")
 )(validate_logout)
+
 
 # Run server
 '''if __name__ == "__main__":

@@ -8,7 +8,7 @@ import requests
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from ...config import config
+from config import config
 
 class Parser(object):
     
