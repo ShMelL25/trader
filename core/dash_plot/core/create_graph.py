@@ -6,7 +6,9 @@ def pie_plot_transaction(telegram_id:int,
                          date_add)->go.Figure:
     
     df = Data_Base_Dash().get_transaction_dash(telegram_id, date_add)
-    fig = px.pie(df, values='sum_enrolment_expenses', names='type_transaction')
+    fig = px.pie(df, 
+                 values='sum_enrolment_expenses', 
+                 names='type_transaction')
     Data_Base_Dash().close_connect()
     
     return fig
@@ -15,8 +17,12 @@ def bar_plot_transaction(telegram_id:int,
                          date_add)->go.Figure:
     
     df = Data_Base_Dash().get_transaction_dash(telegram_id, date_add)
-    fig = px.bar(df, x="year_month", y="sum_enrolment_expenses", color="type_transaction",
-                 barmode='group')
+    fig = px.bar(df, 
+                 y="year_month", 
+                 x="sum_enrolment_expenses", 
+                 color="type_transaction",
+                 barmode='group',
+                 orientation='h')
     Data_Base_Dash().close_connect()
     
     return fig

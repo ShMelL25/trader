@@ -45,6 +45,9 @@ def render_protected_page(pathname):
 
                 # Password Input
                 html.Label("Password:"),
+                dcc.Dropdown(options=Data_Base_Dash().get_date_transaction_dash(session['username']).T[0],
+                            value = Data_Base_Dash().get_date_transaction_dash(session['username']).T[0][-1],
+                            id='date_drop_down_pie', style={"width": "100%", "padding": "10px", "margin-bottom": "20px"}),
                 dcc.Input(
                     id="login-password",
                     type="password",

@@ -67,14 +67,14 @@ app.callback(
 )(render_protected_page)
 
 app.callback(
-    Output("div_pie_plot", "children", allow_duplicate=True),
+    Output("div_pie_plot", "children"),
     Output("url", "href", allow_duplicate=True),
     Input("date_drop_down_pie", "value"), prevent_initial_call=True
 )(generate_plotly_div)
 
 app.callback(
-    Output("div_bar_plot", "children", allow_duplicate=True),
-    Input("date_drop_down_pie", "value"), prevent_initial_call=True
+    Output("div_bar_plot", "children"),
+    Input("date_drop_down_pie", "value")
 )(generate_plotly_div_bar)
 
 #logout_page
