@@ -28,9 +28,7 @@ def start_processes():
     # Ждем завершения процессов
     telegram_process.join()
     dash_process.join()
-
-    
-
+  
 if __name__ == "__main__":
-    start_processes()
+    run_dash()
     

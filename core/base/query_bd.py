@@ -74,6 +74,7 @@ def _get_transaction_query(telegram_id,
     if str(date_add) != 'None':
         return f"""
                 select 	
+                t1.id,
                 to_char(t1.date_enrolment, 'YYYY-MM') as year_month,
                 t3.telegram_id,
                 t1.type_transaction,
@@ -83,6 +84,7 @@ def _get_transaction_query(telegram_id,
                 where t3.telegram_id = {int(telegram_id)} and to_char(t1.date_enrolment, 'YYYY-MM') = '{date_add}'
                 
                 group by
+                t1.id,
                 to_char(t1.date_enrolment, 'YYYY-MM'),
                 t3.telegram_id,
                 t1.type_transaction
@@ -90,7 +92,8 @@ def _get_transaction_query(telegram_id,
             """
             
     return f"""
-                select 	
+                select 
+                t1.id,	
                 to_char(t1.date_enrolment, 'YYYY-MM') as year_month,
                 t3.telegram_id,
                 t1.type_transaction,
@@ -100,6 +103,7 @@ def _get_transaction_query(telegram_id,
                 where t3.telegram_id = {int(telegram_id)}
                 
                 group by
+                t1.id,
                 to_char(t1.date_enrolment, 'YYYY-MM'),
                 t3.telegram_id,
                 t1.type_transaction

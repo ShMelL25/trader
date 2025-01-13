@@ -71,7 +71,7 @@ class Data_Base_Dash:
         
     def get_transaction_dash(self, 
                              telegram_id, 
-                             date_add)->pd.DataFrame:
+                             date_add=None)->pd.DataFrame:
         
         df = pd.read_sql(_get_transaction_query(telegram_id, date_add), self.engine)
         return df
@@ -82,7 +82,28 @@ class Data_Base_Dash:
         df = pd.read_sql(get_date_year_moth_query(telegram_id), self.engine)
         
         return df.to_numpy()
+    
+    def update_add_table(self, 
+                     telegram_id:int, 
+                     value:float,
+                     type_transaction:str, 
+                     text_expenses:str):
         
+        id_ = self.get_id(telegram_id)
+        self.session.execute(text(f"""INSERT INTO 
+                                  enrolment_expenses (user_id, sum_enrolment_expenses, type_transaction, text_expenses) 
+                                  VALUES ({id_}, {value}, '{type_transaction}', '{text_expenses}')
+                                  """))
+        self.session.commit()
+        self.session.close()
+        
+    def update_dell_table(self, id_):
+        self.session.execute(text(f"""
+                                  DELETE FROM enrolment_expenses WHERE id = {id_}
+                                  """))
+        
+        self.session.commit()
+        self.session.close()
     
     def close_connect(self):
         self.session.close()  

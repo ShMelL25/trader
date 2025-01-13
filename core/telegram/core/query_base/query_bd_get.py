@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
-from ...config import config_telegram
+from config import config
 import pandas as pd
 import numpy as np
 from ..kb import generate_menu_rate
@@ -10,7 +10,7 @@ from .create_img import create_rate_plot_plolty, pie_plot_create
 class Sql_Pars(object):
     
     def __init__(self):
-        self.engine = create_engine(config_telegram.SQL_URL)
+        self.engine = create_engine(config.SQL_URL)
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
     

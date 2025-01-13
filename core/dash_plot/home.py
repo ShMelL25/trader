@@ -2,6 +2,8 @@ from dash import html, dcc, Input, Output, State
 from flask import session
 from .core import create_graph as cg
 from core.base.dach_bd import Data_Base_Dash
+import numpy as np
+import pandas as pd
 
 
 # Layout для защищенной страницы
@@ -50,16 +52,41 @@ def render_protected_page(pathname):
             html.H3(f"Добро пожаловать!", style={"textAlign": "center"}),
             
             html.Div([
-                html.Div(children=[
-                    dcc.Dropdown(options=Data_Base_Dash().get_date_transaction_dash(session['username']).T[0],
-                            value = Data_Base_Dash().get_date_transaction_dash(session['username']).T[0][-1],
-                            id='date_drop_down_pie'),
-                    html.Div(id="div_pie_plot", style={"textAlign": "center"})
-                ]),
-                html.Div(children=[
-                    html.Div(id="div_bar_plot", style={"textAlign": "center"})
-                ])
-            ])
+                html.Div([
+                    html.Div([
+                        dcc.Dropdown(options=np.sort(Data_Base_Dash().get_date_transaction_dash(session['username']).T[0]),
+                                    value = np.sort(Data_Base_Dash().get_date_transaction_dash(session['username']).T[0])[-1],
+                                    id='date_drop_down_pie'),
+                        ], 
+                        id='Filter', 
+                        style={'width':'20%'}),
+                    html.Div([
+                        html.Div([
+                            html.Div(
+                                id="info-container-per-month",
+                                style={
+                                    'border': '2px solid black',
+                                    'borderRadius': '5px',
+                                    'padding': '10px',
+                                    'backgroundColor': '#f5f5f5',
+                                    'fontSize': '20px',
+                                    'textAlign': 'center',
+                                    'height': '18%'
+                                }
+                            ),
+                            html.Div(children=[
+                                html.Div(id="div_pie_plot", style={"textAlign": "center"})
+                            ]),
+                        ], style={'display':'flex', 'justify-content': 'center'}),
+                        html.Div(children=[
+                            html.Div(id="div_bar_plot", style={"textAlign": "center"})
+                        ])
+                    ], style={'display': 'flex', 'flex-direction': 'column', 'width': '80%'})
+                    
+                ], style={'display':'flex'}),
+                
+            ]),
+            
             
         ])
     
@@ -83,3 +110,13 @@ def generate_plotly_div_bar(data_time:str):
                             date_add=None)
     
     return dcc.Graph(figure=pie_fig)
+
+def generate_plate_info_(data_time:str):
+    
+    text = cg.plate_info_transaction_per_month(
+                            telegram_id=session['username'],
+                            date_add=data_time)
+    
+    return html.Div([html.Div(text[0]), html.Div(text[1]), html.Div(text[2])], 
+                    style={'display': 'flex', 
+                            'flex-direction': 'column'})
