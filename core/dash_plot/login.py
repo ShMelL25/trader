@@ -75,6 +75,7 @@ def validate_login(n_clicks, username, password):
                 # Устанавливаем сессионное состояние пользователя
                 session['logged_in'] = True
                 session['username'] = username
+                Data_Base_Dash().check_now_date(username)
                 return "","/home"  # Редирект в защищенную зону
             else:
                 return "Неправильный пароль.", "/"

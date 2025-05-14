@@ -28,17 +28,17 @@ def render_protected_page(pathname):
                         'background-color': 'black',
                         'justify-content': 'center'}),
                 html.Div(children=[
-                    html.Div(children=[html.Img(src='assets/icons8-сумка-с-евро-80.png', alt='image'),],
-                             style={'background-color': 'white',})
+                    html.Div(children=[html.Img(src='assets/icons8-money-100.png', alt='image'),],
+                             )
                 ], style={'display': 'flex',
                         'width': '100%',
                         'justify-content': 'center'}),
                 html.Div(children=[
                     html.Div(children=[
                             dcc.Link(children=[
-                                html.Img(src='assets/icons8-выход-50.png', alt='image')
-                            ], href="/logout")],
-                            style={'background-color': 'white',})
+                                html.Img(src='assets/icons8-exit-50.png', alt='image')
+                            ], href="/logout")]
+                             , style={'padding-right':'1%'})
                     
                 ], style={'display': 'flex',
                         'width': '100%',

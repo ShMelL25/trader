@@ -6,8 +6,10 @@ import numpy as np
 from config import config
 from .query_bd import _get_user_id, _add_bd_password_query, \
             _get_bd_password_query, _change_password_query, \
-            _get_transaction_query, get_date_year_moth_query
+            _get_transaction_query, get_date_year_moth_query,\
+            get_type_query, _add_transaction_query
 import bcrypt
+from datetime import datetime
 
 
 class Data_Base_Dash:
@@ -60,6 +62,18 @@ class Data_Base_Dash:
         self.session.commit()
         self.session.close()  
         
+    def check_now_date(self, telegram_id):
+        df = self.get_date_transaction_dash(telegram_id)
+        
+        if '-'.join(str(datetime.now().date()).split('-')[:2]) not in df:
+            query = _add_transaction_query(self.get_id(telegram_id=telegram_id), 
+                                   sum_tr=0,
+                                   type_tr='expenses')
+            self.session.execute(text(query))
+            self.session.commit()
+            self.session.close()   
+        
+        
     def get_id(self, telegram_id):
         
         df = pd.read_sql(_get_user_id(telegram_id=telegram_id), self.engine)
@@ -83,17 +97,34 @@ class Data_Base_Dash:
         
         return df.to_numpy()
     
+    def get_type_transaction_dash(self, 
+                             telegram_id)->np.array:
+        
+        df = pd.read_sql(get_type_query(telegram_id), self.engine)
+        
+        return df.to_numpy()
+    
     def update_add_table(self, 
                      telegram_id:int, 
                      value:float,
                      type_transaction:str, 
-                     text_expenses:str):
+                     text_expenses:str,
+                     date_tr:str):
         
         id_ = self.get_id(telegram_id)
-        self.session.execute(text(f"""INSERT INTO 
+        
+        if date_tr == None or date_tr == '':
+            query = f"""INSERT INTO 
                                   enrolment_expenses (user_id, sum_enrolment_expenses, type_transaction, text_expenses) 
                                   VALUES ({id_}, {value}, '{type_transaction}', '{text_expenses}')
-                                  """))
+                                  """
+        else:
+            query = f"""INSERT INTO 
+                                  enrolment_expenses (user_id, sum_enrolment_expenses, type_transaction, text_expenses, date_enrolment) 
+                                  VALUES ({id_}, {value}, '{type_transaction}', '{text_expenses}', date('{date_tr}'))
+                                  """
+        
+        self.session.execute(text(query))
         self.session.commit()
         self.session.close()
         

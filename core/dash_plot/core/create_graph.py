@@ -20,6 +20,7 @@ def bar_plot_transaction(telegram_id:int,
     
     df = Data_Base_Dash().get_transaction_dash(telegram_id, date_add)
     df['year_month'] = df['year_month'].astype('datetime64[ns]')
+    df = df.groupby(['year_month', 'type_transaction']).sum().reset_index()
     fig = px.bar(df, 
                  x="year_month", 
                  y="sum_enrolment_expenses", 
