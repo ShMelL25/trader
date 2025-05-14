@@ -62,11 +62,13 @@ def _get_currency_rate(pair)->str:
 
 def _add_transaction_query(id_user,
                            sum_tr,
-                           type_tr):
+                           type_tr,
+                           ):
+    
     return f'''
-                INSERT INTO enrolment_expenses (user_id, sum_enrolment_expenses, type_transaction) 
-                VALUES ({id_user},{sum_tr}, '{type_tr}')
-            '''
+                    INSERT INTO enrolment_expenses (user_id, sum_enrolment_expenses, type_transaction) 
+                    VALUES ({id_user},{sum_tr}, '{type_tr}')
+                '''
             
 def _get_transaction_query(telegram_id,
                            date_add=None):
@@ -119,6 +121,18 @@ def get_date_year_moth_query(telegram_id):
             where telegram_id = {int(telegram_id)}
             group by
 			to_char(t1.date_enrolment, 'YYYY-MM')
+        
+        """
+
+def get_type_query(telegram_id):
+    return f"""
+            select 	
+			type_transaction as type_transaction
+            from enrolment_expenses t1 
+            join users_trade_torch t3 on t3.id = t1.user_id
+            where telegram_id = {int(telegram_id)}
+            group by
+			type_transaction
         
         """
 

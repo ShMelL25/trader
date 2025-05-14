@@ -5,7 +5,7 @@ from .login import login_layout, validate_login
 from .home import home_layout, render_protected_page, generate_plotly_div,\
     generate_plotly_div_bar, generate_plate_info_
 from .register import register_user, register_layout
-from .edit_page import edit_layout, generate_data_table, \
+from .edit_page import edit_layout, \
     update_table, render_edit_protected_page
 
 from dash import Dash
@@ -94,13 +94,15 @@ app.callback(
     Input("url", "pathname"), 
 )(render_edit_protected_page)
 
-
-
 app.callback(
     Output('datatable', 'data'),
     Input('add-button', 'n_clicks'),
     Input('datatable', 'data_previous'),
     Input('datatable', 'data'),
+    Input('drop_down_type_transaction', 'value'),
+    Input('drop_down_text_expenses', 'value'),
+    Input('date-picker', 'date'),
+    Input('data_elroment', 'value'),
     prevent_initial_call=True
 )(update_table)
 

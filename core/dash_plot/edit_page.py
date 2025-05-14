@@ -6,8 +6,13 @@ from .core import create_graph as cg
 from core.base.dach_bd import Data_Base_Dash
 import numpy as np
 import pandas as pd
+from datetime import datetime
 
-
+common_font_style = {
+    'font-family': 'Arial, sans-serif',
+    'font-size': '14px',
+    'color': '#333333',
+}
 # Layout для защищенной страницы
 edit_layout = html.Div(id="edit-page-content")
 
@@ -54,18 +59,51 @@ def render_edit_protected_page(pathname):
                     'background-color': 'black',
                     'justify-content': 'center',
                     'align-items': 'center',}),
-            html.Div([
-                dcc.Input(id='input-value', type='text', placeholder='Введите значение'),
+            html.Div([ # edit div
+                html.Div([
+                    html.Div([
+                        html.P(children='Date: ',
+                            style={'width':'20%'}),
+                        dcc.DatePickerSingle(
+                            id='date-picker',
+                            min_date_allowed='2020-01-01',  # Минимальная доступная дата
+                            max_date_allowed=datetime.now().date(),  # Максимальная доступная дата
+                            initial_visible_month=datetime.now().date(),  # Месяц, который отображается при открытии
+                            date=datetime.now().date(),  # Значение по умолчанию
+                            display_format='YYYY-MM-DD',  # Формат отображения даты
+                            style={'width':'80%'}
+                        )
+                    ], style={'display':'flex', 'width':'80%', 'align-items':'center'}),
+                    html.Div([
+                        html.P(children='Value: ',
+                               style={'width':'20%'}),
+                        dcc.Input(id='data_elroment', 
+                                  type='text', 
+                                  placeholder='Введите значение',
+                                  style={'width':'80%'})
+                    ],style={'display':'flex','width':'80%', 'align-items':'center'}),
+                    
+                    html.Div([
+                        html.P(children='Type: ',
+                               style={'width':'20%'}),
+                        
+                        dcc.Dropdown(options=np.sort(Data_Base_Dash().get_type_transaction_dash(session['username']).T[0]),
+                                        value = np.sort(Data_Base_Dash().get_type_transaction_dash(session['username']).T[0])[-1],
+                                        id='drop_down_type_transaction',
+                                        style={'width':'80%'})
+                    ],style={'display':'flex','width':'80%', 'align-items':'center'}),
+                    html.Div([
+                        html.P(children='Text: ',
+                               style={'width':'20%'}),
+                        dcc.Input(id='drop_down_text_expenses', 
+                                  type='text', 
+                                  placeholder='Введите значение',
+                                  style={'width':'80%'})
+                    ],style={'display':'flex','width':'80%', 'align-items':'center'}),
+                    
+                    html.Button('Добавить', id='add-button'),
+                ],style={'width':'20%', **common_font_style}),
                 
-                dcc.Dropdown(options=np.sort(Data_Base_Dash().get_date_transaction_dash(session['username']).T[0]),
-                                    value = np.sort(Data_Base_Dash().get_date_transaction_dash(session['username']).T[0])[-1],
-                                    id='drop_down_type_transaction'),
-                
-                dcc.Dropdown(options=np.sort(Data_Base_Dash().get_date_transaction_dash(session['username']).T[0]),
-                                    value = np.sort(Data_Base_Dash().get_date_transaction_dash(session['username']).T[0])[-1],
-                                    id='drop_down_text_expenses'),
-                
-                html.Button('Добавить', id='add-button'),
                 
                 html.Div([
                         DataTable(
@@ -82,18 +120,21 @@ def render_edit_protected_page(pathname):
                             row_deletable=True,  # Позволяет удалять строки
                             sort_action='native'
                         )
-                    ],id='div-table-container')
+                    ],id='div-table-container', style={'width':'80%'})
                 
-            ])
+            ], style={'display':'flex'})
         ])
-    
+
     
 
 def update_table(add_clicks, 
                  previous_data, 
                  current_data,
                  type_transaction,
-                 text_expenses):
+                 text_expenses,
+                 date_picker,
+                 new_data):
+    
     
     ctx = dash.callback_context
     
@@ -104,12 +145,12 @@ def update_table(add_clicks,
 
     # Добавление новой записи
     if triggered_id == 'add-button' and current_data:
-        new_value = current_data[-1]['sum_enrolment_expenses'] if current_data else ''
         Data_Base_Dash().update_add_table(
                     telegram_id=session['username'], 
-                    value=new_value,
+                    value=new_data,
                     type_transaction=type_transaction, 
-                    text_expenses=text_expenses)
+                    text_expenses=text_expenses,
+                    date_tr=date_picker)
         
 
     # Проверка на удаленные строки
